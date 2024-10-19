@@ -1,0 +1,34 @@
+@import io.github.dejavuhuh.devtools.sql.benchmark.BenchmarkOptions
+@import gg.jte.support.ForSupport
+
+@param options: BenchmarkOptions
+@param statements: List<String>
+
+CREATE OR REPLACE FUNCTION benchmark() RETURNS TABLE (
+    run_time INT,
+    statement_index INT,
+    elapsed_ms BIGINT
+) AS $$
+DECLARE
+    run_times CONSTANT INT := ${options.runTimes};
+    repeat_times CONSTANT INT := ${options.repeatTimes};
+    v_ts TIMESTAMP;
+    rec RECORD;
+BEGIN
+    FOR r IN 1..run_times
+    LOOP
+        @for(entry in ForSupport.of(statements))
+        v_ts := clock_timestamp();
+
+        FOR i IN 1..repeat_times
+        LOOP
+            FOR rec IN (${entry.get()})
+            LOOP NULL;
+            END LOOP;
+        END LOOP;
+
+        RETURN QUERY SELECT r, ${entry.index}, ROUND((EXTRACT(EPOCH FROM (clock_timestamp() - v_ts)) * 1000)::numeric, 0)::bigint;
+        @endfor
+    END LOOP;
+END
+$$ LANGUAGE plpgsql

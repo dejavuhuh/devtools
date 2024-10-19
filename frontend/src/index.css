@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  height: 100vh;
+  background: #F1F5F9;
+}
+
+#root {
+  height: 100%;
+}
+
+a {
+  color: var(--ant-color-link);
+}
+
+/* antd tree 箭头垂直居中 */
+.ant-tree .ant-tree-switcher,
+.ant-select-tree-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
